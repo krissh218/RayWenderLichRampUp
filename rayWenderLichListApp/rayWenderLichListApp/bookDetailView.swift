@@ -11,35 +11,54 @@ struct bookDetailView: View {
     let book: Book
     @State var isPresented = false
     @Binding var displayImage:UIImage?
+    @State var showingAlert = false
     var body: some View {
         VStack(alignment: .leading, spacing: 10){
             TitleAndAuthorView(book: book, titleFont: .title, authorFont: .title2)
     
+            
+            let updatedButton =                     Button("Update Image") {
+                isPresented = true
+            }
+            .padding()
+             .border(Color.black, width: 2)
+            .foregroundColor(.primary)
+            .cornerRadius(5)
+            
             VStack(alignment: .center, spacing: 10){
                 Book.Image(title: book.title, size: nil, uiImage: displayImage, cornerRadius: 16)
                     .scaledToFit()
-                Button("Update Image") {
-                    isPresented = true
-                }
-                .padding()
-                .border(Color.black, width: 2)
-                .foregroundColor(.primary)
-                .font(Font.title.weight(.bold))
-                .cornerRadius(10)
-
                 
+                if displayImage != nil {
+                    HStack(alignment:.center, spacing:10) {
+                    
+                        Button("Delete Image") {
+                            showingAlert = true
+                        }
+                        .padding()
+                         .border(Color.black, width: 2)
+                        .foregroundColor(.primary)
+                        .cornerRadius(5)
+                        updatedButton
+                     } .padding()
+                }
+                
+                else {
+                    updatedButton
+                }
+
             }
             .sheet(isPresented: $isPresented, content: {
                         PHPickerViewController.View(image: $displayImage)
                     })
         }
-//        .alert(isPresented: .constant(true)) {
-//            
-//
-//            .init(title: Text("Delete \(book.title)"), primaryButton: Alert.Button.destructive(Text("Delete"), action: {
-//                displayImage = nil
-//            }), secondaryButton: Alert.Button.cancel())
-//        }
+        .alert(isPresented: $showingAlert) {
+            
+
+            .init(title: Text("Delete \(book.title)"), primaryButton: Alert.Button.destructive(Text("Delete"), action: {
+                displayImage = nil
+            }), secondaryButton: Alert.Button.cancel())
+        }
     }
 }
 
